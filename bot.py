@@ -6,13 +6,19 @@ import threading
 import time
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
-from config import TELEGRAM_TOKEN, RICETTE_DIR
+from config import RICETTE_DIR
 from agent import rispondi_stream, reset_memoria
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO,
 )
+
+# Debug avvio — mostra se le variabili sono presenti
+_token_ok = bool(os.getenv("TELEGRAM_TOKEN"))
+_groq_ok = bool(os.getenv("GROQ_API_KEY"))
+print(f"[STARTUP] TELEGRAM_TOKEN presente: {_token_ok}")
+print(f"[STARTUP] GROQ_API_KEY presente: {_groq_ok}")
 
 CHAT_IDS_FILE = os.path.join(os.path.dirname(__file__), "chat_ids.json")
 
@@ -138,7 +144,10 @@ async def notifica_spegnimento(app) -> None:
 
 
 async def main() -> None:
-    app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
+    token = os.getenv("TELEGRAM_TOKEN")
+    if not token:
+        raise ValueError("TELEGRAM_TOKEN non trovata nelle variabili d'ambiente.")
+    app = ApplicationBuilder().token(token).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("reset", reset))
     app.add_handler(CommandHandler("lista", lista))
