@@ -1,9 +1,13 @@
 import os
 from groq import Groq
-from config import GROQ_API_KEY, GROQ_MODEL
+from config import GROQ_MODEL
 from rag import carica_ricette, cerca
 
-client = Groq(api_key=GROQ_API_KEY)
+def _get_client() -> Groq:
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        raise ValueError("GROQ_API_KEY non trovata nelle variabili d'ambiente.")
+    return Groq(api_key=api_key)
 
 _storico: dict[int, list[dict]] = {}
 MAX_MESSAGGI = 10
@@ -67,7 +71,7 @@ def _salva_risposta(chat_id: int, testo: str) -> None:
 def rispondi(domanda: str, chat_id: int) -> str:
     messaggi = _prepara_messaggi(domanda, chat_id)
     try:
-        risposta = client.chat.completions.create(
+        risposta = _get_client().chat.completions.create(
             model=GROQ_MODEL,
             messages=messaggi,
         )
@@ -87,7 +91,7 @@ def rispondi_stream(domanda: str, chat_id: int):
     messaggi = _prepara_messaggi(domanda, chat_id)
     testo_completo = ""
     try:
-        stream = client.chat.completions.create(
+        stream = _get_client().chat.completions.create(
             model=GROQ_MODEL,
             messages=messaggi,
             stream=True,
