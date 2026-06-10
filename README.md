@@ -180,6 +180,40 @@ pasticcerebot-pro/
 
 ---
 
+## Gestione del bot su Railway
+
+Il bot gira su Railway 24/7 in modo automatico. Non serve fare nulla per tenerlo acceso.
+
+### Spegnere il bot
+
+1. Vai su [railway.app](https://railway.app) → apri il progetto
+2. Clicca sul servizio del bot
+3. Vai nel tab **Deployments**
+4. Clicca sui tre puntini `...` accanto all'ultimo deploy attivo
+5. Seleziona **Remove Deployment**
+
+Il bot si spegne immediatamente. Le variabili d'ambiente e i file restano intatti.
+
+### Riavviare il bot
+
+**Opzione 1 — da Railway (senza modifiche al codice):**
+1. Vai nel tab **Deployments**
+2. Clicca sui tre puntini `...` accanto all'ultimo deploy
+3. Seleziona **Redeploy**
+
+**Opzione 2 — da terminale (con o senza modifiche):**
+```bash
+git commit --allow-empty -m "restart"
+git push
+```
+Railway rileva il push e rideploya automaticamente.
+
+### Aggiornare il bot
+
+Qualsiasi `git push` sul branch `main` triggera un redeploy automatico su Railway. Non serve fare nulla di manuale.
+
+---
+
 ## Aggiungere ricette
 
 Crea un file `.txt` in `data/ricette/` con il nome della ricetta usando underscore al posto degli spazi (es. `creme_caramel.txt`). Il bot la rileva automaticamente al prossimo messaggio, senza riavvio.
